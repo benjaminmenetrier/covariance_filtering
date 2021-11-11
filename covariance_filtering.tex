@@ -298,7 +298,7 @@ Indices $r$ and $s$ have to verify $r = p$ and $s = q$:
 \big[ & \varnothing & \big] & r & \big[ & \varnothing & \big] & s & \big[ & \varnothing & \big] \nonumber
 \end{array}
 \end{align}
-Globally, there are $\displaystyle \frac{N(N-1)(N-2)}{2}$ such terms in the sum, each one similar to:
+Globally, there are $\displaystyle \frac{N(N-1)}{2}$ such terms in the sum, each one similar to:
 \begin{align}
 & \mathbb{E}\left[ \left(\widetilde{\varepsilon}^b_{i,p}-\widetilde{\varepsilon}^b_{i,q}\right)\left(\widetilde{\varepsilon}^b_{j,p}-\widetilde{\varepsilon}^b_{j,q}\right) \left(\widetilde{\varepsilon}^b_{k,p}-\widetilde{\varepsilon}^b_{k,q}\right)\left(\widetilde{\varepsilon}^b_{l,p}-\widetilde{\varepsilon}^b_{l,q}\right) \right] \nonumber \\
 = \ & \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,p} \widetilde{\varepsilon}^b_{j,p} \widetilde{\varepsilon}^b_{k,p} \widetilde{\varepsilon}^b_{l,p}\right] + \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,q} \widetilde{\varepsilon}^b_{j,q} \widetilde{\varepsilon}^b_{k,q} \widetilde{\varepsilon}^b_{l,p}\right] \nonumber \\
@@ -2047,6 +2047,14 @@ where $\left\{\boldsymbol{\eta}_1,\dots,\boldsymbol{\eta}_{\overbar{N}}\right\}$
 Computing the spatial and angular average by using the same random sampling as for the ``real'' ensemble $\left\{\widetilde{\mathbf{x}}^b_1,\dots,\widetilde{\mathbf{x}}^b_N\right\}$ ensures a better consistency of both estimations, at the lowest cost.
 
 \clearpage
+
+\section*{Acknowledgements}
+Many thanks to the careful readers that spotted some typos:
+\begin{itemize}
+\item Mayeul Destouches (CNRM-Météo France, Toulouse, France)
+\item Zofia Stanley (CIRES, Boulder, Colorado)
+\end{itemize}
+
 
 \bibliographystyle{mybib-en}
 \bibliography{covariance_filtering}
