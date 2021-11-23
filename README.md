@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/291685619.svg)](https://zenodo.org/badge/latestdoi/291685619)
+
 # Covariance filtering
 
 Theoretical background for covariance filtering, based on three papers:
