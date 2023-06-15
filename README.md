@@ -9,4 +9,4 @@ Theoretical background for covariance filtering, based on three papers:
 
 This note describes the theory in details and offers many extensions.
 
-If you find errors or typos, please contact me at: benjamin.menetrier@irit.fr
+If you find errors or typos, please contact me at: benjamin.menetrier@met.no
