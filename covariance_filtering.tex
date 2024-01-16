@@ -430,9 +430,9 @@ Instead of having an ensemble of size $N$ that samples the distribution of a ran
 \end{align}
 where $\langle \cdot \rangle$ denotes the sub-ensemble mean:
 \begin{align}
-\langle \widetilde{\mathbf{x}}^b_p \rangle = \frac{1}{N_r} \sum_{p=1}^{N_r} \widetilde{\mathbf{x}}^b_{r,p}
+\langle \widetilde{\mathbf{x}}^b_r \rangle = \frac{1}{N_r} \sum_{p=1}^{N_r} \widetilde{\mathbf{x}}^b_{r,p}
 \end{align}
-For each sub-ensembles, centered moments can be estimated from these perturbations by:
+For each sub-ensemble, centered moments can be estimated from these perturbations by:
 \begin{subequations}
 \begin{align}
 \widetilde{B}_{ij,r} & = \frac{1}{N_r-1} \sum_{p=1}^{N_r} \delta \widetilde{x}^b_{i,r,p} \delta \widetilde{x}^b_{j,r,p}  \\
@@ -461,7 +461,7 @@ which can be expressed as:
 The sample covariance matrix of the full ensemble is given by:
 \begin{align}
 \label{eq:cov_estim_full}
-\widetilde{B}_{ij} & = \frac{1}{N-1} \sum_{r=1}^R \sum_{p_r=1}^{N_r} \left(\widetilde{x}_{i,r,p_r} - \langle \widetilde{x}_{i} \rangle\right) \left(\widetilde{x}_{j,r,p_r} - \langle \widetilde{x}_{j} \rangle\right)
+\widetilde{B}^F_{ij} & = \frac{1}{N-1} \sum_{r=1}^R \sum_{p_r=1}^{N_r} \left(\widetilde{x}_{i,r,p_r} - \langle \widetilde{x}_{i} \rangle\right) \left(\widetilde{x}_{j,r,p_r} - \langle \widetilde{x}_{j} \rangle\right)
 \end{align}
 Using the expansion of the full ensemble mean, we get for each sub-ensemble $r$:
 \begin{align}
@@ -475,11 +475,11 @@ Using the same process as for equation \eqref{eq:cov_estim_2}, the last term sum
 & \sum_{1 \le r,s,t \le R} \frac{N_r N_s N_t}{N^2} \left(\langle \widetilde{x}_{i,s} \rangle - \langle \widetilde{x}_{i,r} \rangle \right) \left(\langle \widetilde{x}_{j,t} \rangle - \langle \widetilde{x}_{j,r} \rangle \right) \nonumber \\
 = \ & \sum_{1 \le r < s \le R} \frac{N_r N_s}{R N^2} \left(\langle \widetilde{x}_{i,s} \rangle - \langle \widetilde{x}_{i,r} \rangle \right) \left(\langle \widetilde{x}_{j,s} \rangle - \langle \widetilde{x}_{j,r} \rangle \right)
 \end{align}
-Thus, the sample covariance matrix of equation \eqref{eq:cov_estim_full} can be expressed as:
+Thus, the sample covariance matrix of equation for the full ensemble can be expressed as:
 \begin{align}
-\widetilde{B}_{ij} =  \frac{1}{N-1} \left(\sum_{r=1}^R \left(N_r-1\right) \widetilde{B}_{ij,r} + \sum_{1 \le r < s \le R} \frac{N_r N_s}{R N^2} \left(\langle \widetilde{x}_{i,s} \rangle - \langle \widetilde{x}_{i,r} \rangle \right) \left(\langle \widetilde{x}_{j,s} \rangle - \langle \widetilde{x}_{j,r} \rangle \right) \right)
+\widetilde{B}^F_{ij} =  \frac{1}{N-1} \left(\sum_{r=1}^R \left(N_r-1\right) \widetilde{B}_{ij,r} + \sum_{1 \le r < s \le R} \frac{N_r N_s}{R N^2} \left(\langle \widetilde{x}_{i,s} \rangle - \langle \widetilde{x}_{i,r} \rangle \right) \left(\langle \widetilde{x}_{j,s} \rangle - \langle \widetilde{x}_{j,r} \rangle \right) \right)
 \end{align}
-It appears that the full ensemble sample covariance is not a linear combination of the sub-ensembles sample covariances. Indeed, there is also a term involving products of sub-ensembles means if these sample means differ between sub-ensembles.\\
+It appears that the full ensemble sample covariance $\widetilde{\mathbf{B}}^F$ is not a linear combination of the sub-ensemble sample covariances. Indeed, there is also a term involving products of sub-ensemble means if these sample means differ between sub-ensembles.\\
 $  $\\
 The expectation of a sub-ensemble mean is simply the distribution mean:
 \begin{align}
@@ -509,7 +509,7 @@ With these results, we can compute the expectation of the full ensemble sample c
 & = \frac{1}{N-1} \left(\sum_{r=1}^R \left(N_r-1\right) B_{ij,r} + \frac{1}{R N^2} \sum_{1 \le r < s \le R} \left(N_s B_{ij,r} + N_r B_{ij,s}\right) \right. \nonumber \\
 & \left. \quad + \sum_{1 \le r < s \le R} \frac{N_r N_s}{R N^2} \left(\mathbb{E} \left[x_{i,s} \right] - \mathbb{E} \left[x_{i,r} \right]\right)\left(\mathbb{E} \left[x_{j,s} \right] - \mathbb{E} \left[x_{j,r} \right] \right)\right)
 \end{align}
-This equation is a confirmation of the systematic impact of distributions means differences on the full ensemble expected sample covariance, which is not a desired property.
+This equation is a confirmation of the systematic impact of distributions means differences on the full ensemble expected sample covariance $\widetilde{\mathbf{B}}^F$, which is not a desired property.
 
 \subsection{Corrected sample moments}
 As a solution, we can remove sub-ensemble means for each sub-ensemble in the calculation of the full ensemble sample covariance. We define the sum of perturbations products $\widetilde{\mathbf{S}}^c$:
@@ -544,7 +544,7 @@ Since the sample fourth-order centered moment estimator is biased, the previous 
 \end{align}
 
 \subsection{Asymptotic behavior}
-The corrected sample covariance $\widetilde{\mathbf{B}}^c$ is a linear combination of sub-ensembles sample covariances, the weights being related to the relative sizes of sub-ensembles. If we define $\boldsymbol{\gamma} \in [0,1]^R$ such that $N_r = \gamma_r N$, then we get:
+The corrected sample covariance $\widetilde{\mathbf{B}}^c$ is a linear combination of sub-ensemble sample covariances, the weights being related to the relative sizes of sub-ensembles. If we define $\boldsymbol{\gamma} \in [0,1]^R$ such that $N_r = \gamma_r N$, then we get:
 \begin{align}
 \widetilde{B}^c_{ij} & = \sum_{r=1}^R \frac{\gamma_r N-1}{N-R} \widetilde{B}_{ij,r}
 \end{align}
