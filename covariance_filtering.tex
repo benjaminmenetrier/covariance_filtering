@@ -250,7 +250,7 @@ It should be emphasized that:
 \end{itemize}
 As a consequence, the expectation of a product of several unbiased perturbations vanishes if one of them (i.e. one ensemble member index) is present only once in the product. For sake of clarity, such vanishing combinations are not explicitly mentioned hereafter. Besides, we can get the asymptotic sample covariance and asymptotic fourth-order centered moment from properties \eqref{eq:prop_pert_2} and \eqref{eq:prop_pert_3}.\\
 $  $\\
-Indices $p$ and $q$ can be drawn first: there are $\displaystyle \frac{N(N-1)}{2}$ such draws for $1 \le p < q \le N$. Indices $r$ and $s$ are drawn in a second step, splitting the possibilities in three subsets depending on the cardinality of the intersection $\{p,q\} \cap \{r,s\}$, which can only takes values of 0, 1 and 2.
+Indices $p$ and $q$ can be drawn first: there are $\displaystyle \frac{N(N-1)}{2}$ such draws for $1 \le p < q \le N$. Indices $r$ and $s$ are drawn in a second step, splitting the possibilities in three subsets depending on the cardinality of the intersection $\{p,q\} \cap \{r,s\}$, which can only take values of 0, 1 and 2.
 \begin{enumerate}
 \item First case: $|\{p,q\} \cap \{r,s\}| = 0$.\\
 Indices $r$ and $s$ have to verify the condition $r,s \ne p$ and $r,s \ne q$. In the following diagram, $\varnothing$ denotes the forbidden values:
@@ -503,7 +503,7 @@ and for distinct sub-ensembles $r \ne s$:
 \end{align}
 With these results, we can compute the expectation of the full ensemble sample covariance matrix:
 \begin{align}
-\mathbb{E} \left[\widetilde{B}_{ij}\right] & = \frac{1}{N-1} \left(\sum_{r=1}^R \left(N_r-1\right) B_{ij,r} + \sum_{1 \le r < s \le R} \frac{N_r N_s}{R N^2} \left(\frac{1}{N_r} B_{ij,r} + \frac{1}{N_s} B_{ij,s} \right. \right.\nonumber \\
+\mathbb{E} \left[\widetilde{B}^F_{ij}\right] & = \frac{1}{N-1} \left(\sum_{r=1}^R \left(N_r-1\right) B_{ij,r} + \sum_{1 \le r < s \le R} \frac{N_r N_s}{R N^2} \left(\frac{1}{N_r} B_{ij,r} + \frac{1}{N_s} B_{ij,s} \right. \right.\nonumber \\
 & \left. \left. \quad + \mathbb{E} \left[x_{i,r} \right] \mathbb{E} \left[x_{j,r} \right] + \mathbb{E} \left[x_{i,s} \right] \mathbb{E} \left[x_{j,s} \right] - \mathbb{E} \left[x_{i,r}\right] \mathbb{E} \left[x_{j,s}\right] - \mathbb{E} \left[x_{i,s}\right] \mathbb{E} \left[x_{j,r}\right] \right) \right) \nonumber \\
 & = \frac{1}{N-1} \left(\sum_{r=1}^R \left(N_r-1\right) B_{ij,r} + \frac{1}{R N^2} \sum_{1 \le r < s \le R} \left(N_s B_{ij,r} + N_r B_{ij,s}\right) \right. \nonumber \\
 & \left. \quad + \sum_{1 \le r < s \le R} \frac{N_r N_s}{R N^2} \left(\mathbb{E} \left[x_{i,s} \right] - \mathbb{E} \left[x_{i,r} \right]\right)\left(\mathbb{E} \left[x_{j,s} \right] - \mathbb{E} \left[x_{j,r} \right] \right)\right)
