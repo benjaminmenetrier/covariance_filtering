@@ -26,7 +26,8 @@
 \usepackage[pdftex,pdfborder={0 0 0}]{hyperref}
 \usepackage{pdfpages}
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows,decorations.pathmorphing}
+\usetikzlibrary{shapes,backgrounds,fit,positioning,arrows,positioning,decorations.pathmorphing,decorations.pathreplacing,backgrounds}
+\usepackage{accents}
 
 \renewcommand*{\familydefault}{\sfdefault}
 
@@ -42,6 +43,7 @@
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\Diag}{Diag}
 \DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\var}{var}
 \DeclareMathOperator{\Cov}{Cov}
 \DeclareMathOperator{\Cor}{Cor}
 \newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
@@ -88,7 +90,7 @@ Copyright \copyright 2015-2024: UCAR, CERFACS, METEO-FRANCE, IRIT and Meteorolog
 
 \part{Sampling covariances}
 
-\section{Sampling theory}
+\section{Standard estimators}
 
 In this section, indices $i$, $j$, $k$ and $l$ refer to vector elements and indices $p$, $q$, $r$ and $s$ to ensemble members.
 
@@ -224,7 +226,9 @@ The expectation of $\widetilde{B}_{ij}$ given by the new estimator \eqref{eq:cov
 Using properties \eqref{eq:prop_pert_2} and \eqref{eq:prop_pert_4}:
 \begin{subequations}
 \begin{align}
+\label{eq:exp_pert_prod_1}
 \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,p} \widetilde{\varepsilon}^b_{j,p}\right] = \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,q} \widetilde{\varepsilon}^b_{j,q}\right] & = B_{ij} \\
+\label{eq:exp_pert_prod_2}
 \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,p} \widetilde{\varepsilon}^b_{j,q}\right] = \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,q} \widetilde{\varepsilon}^b_{j,p}\right] & = 0
 \end{align}
 \end{subequations}
@@ -417,6 +421,299 @@ P_5(N) & = \frac{(N-1)(N^2-3N+3)}{N^3} \\
 P_6(N) & = \frac{(N-1)(2N-3)}{N^3}
 \end{align}
 \end{subequations}
+
+\section{Circular covariance estimator}
+
+\subsection{Circular differences between members}
+The sample covariance can also be estimated using another method based on differences between ensemble members like \eqref{eq:cov_estim_2}, but using $N$ differences only:
+\begin{align}
+\label{eq:cov_estim_3}
+\accentset{\circ}{B}_{ij} & = \frac{1}{2N} \sum_{1 \le p \le N} \left(\widetilde{x}^b_{i,p} - \widetilde{x}^b_{i,f(p)}\right) \left(\widetilde{x}^b_{j,p} - \widetilde{x}^b_{j,f(p)}\right)
+\end{align}
+where $f(p)$ is the previous member index, in a circular way:
+\begin{align}
+f(p) = \left\{ \begin{array}{rcl}
+p-1 & \text{ if } & p > 1 \\
+N & \text{ if } & p = 1
+\end{array}\right.
+\end{align}
+Illustration with an ensemble of 6 members: standard estimator (a), equivalent standard estimator using differences (b) and circular estimator (c).
+\begin{center}
+\begin{tikzpicture}[x=2.2cm,y=1.0cm]
+\draw[->] (0,0)--(2,0);
+\draw[->] (0,0)--(0,3.5);
+\node[] (M1) at (0.5,1.8) {\textbullet};
+\node[] (M2) at (0.5,0.5) {\textbullet};
+\node[] (M3) at (0.7,3) {\textbullet};
+\node[] (M4) at (1,1) {\textbullet};
+\node[] (M5) at (1,2.5) {\textbullet};
+\node[] (M6) at (1.5,3) {\textbullet};
+\node[] (M0) at (0.867, 1.967)  {\textcolor{red}{\textbullet}};
+\begin{scope}[on background layer]
+\path [draw, thick, color=black!40] (M1.center) -- (M0.center) node[] {};
+\path [draw, thick, color=black!40] (M2.center) -- (M0.center) node[] {};
+\path [draw, thick, color=black!40] (M3.center) -- (M0.center) node[] {};
+\path [draw, thick, color=black!40] (M4.center) -- (M0.center) node[] {};
+\path [draw, thick, color=black!40] (M5.center) -- (M0.center) node[] {};
+\path [draw, thick, color=black!40] (M6.center) -- (M0.center) node[] {};
+\end{scope}
+\node[] (letter) at (1.8,0.5) {(a)};
+\end{tikzpicture}
+$\qquad$
+\begin{tikzpicture}[x=2.2cm,y=1.0cm]
+\draw[->] (0,0)--(2,0);
+\draw[->] (0,0)--(0,3.5);
+\node[] (M1) at (0.5,1.8) {\textbullet};
+\node[] (M2) at (0.5,0.5) {\textbullet};
+\node[] (M3) at (0.7,3) {\textbullet};
+\node[] (M4) at (1,1) {\textbullet};
+\node[] (M5) at (1,2.5) {\textbullet};
+\node[] (M6) at (1.5,3) {\textbullet};
+\begin{scope}[on background layer]
+\path [draw, thick, color=black!40] (M1.center) -- (M2.center) node[] {};
+\path [draw, thick, color=black!40] (M1.center) -- (M3.center) node[] {};
+\path [draw, thick, color=black!40] (M1.center) -- (M4.center) node[] {};
+\path [draw, thick, color=black!40] (M1.center) -- (M5.center) node[] {};
+\path [draw, thick, color=black!40] (M1.center) -- (M6.center) node[] {};
+\path [draw, thick, color=black!40] (M2.center) -- (M3.center) node[] {};
+\path [draw, thick, color=black!40] (M2.center) -- (M4.center) node[] {};
+\path [draw, thick, color=black!40] (M2.center) -- (M5.center) node[] {};
+\path [draw, thick, color=black!40] (M2.center) -- (M6.center) node[] {};
+\path [draw, thick, color=black!40] (M3.center) -- (M4.center) node[] {};
+\path [draw, thick, color=black!40] (M3.center) -- (M5.center) node[] {};
+\path [draw, thick, color=black!40] (M3.center) -- (M6.center) node[] {};
+\path [draw, thick, color=black!40] (M4.center) -- (M5.center) node[] {};
+\path [draw, thick, color=black!40] (M4.center) -- (M6.center) node[] {};
+\path [draw, thick, color=black!40] (M5.center) -- (M6.center) node[] {};
+\end{scope}
+\node[] (letter) at (1.8,0.5) {(b)};
+\end{tikzpicture}
+$\qquad$
+\begin{tikzpicture}[x=2.2cm,y=1.0cm]
+\draw[->] (0,0)--(2,0);
+\draw[->] (0,0)--(0,3.5);
+\node[] (M1) at (0.5,1.8) {\textbullet};
+\node[] (M2) at (0.5,0.5) {\textbullet};
+\node[] (M3) at (0.7,3) {\textbullet};
+\node[] (M4) at (1,1) {\textbullet};
+\node[] (M5) at (1,2.5) {\textbullet};
+\node[] (M6) at (1.5,3) {\textbullet};
+\begin{scope}[on background layer]
+\path [draw, thick, color=black!40] (M1.center) -- (M2.center) node[] {};
+\path [draw, thick, color=black!40] (M2.center) -- (M4.center) node[] {};
+\path [draw, thick, color=black!40] (M4.center) -- (M6.center) node[] {};
+\path [draw, thick, color=black!40] (M6.center) -- (M5.center) node[] {};
+\path [draw, thick, color=black!40] (M5.center) -- (M3.center) node[] {};
+\path [draw, thick, color=black!40] (M3.center) -- (M1.center) node[] {};
+\end{scope}
+\node[] (letter) at (1.8,0.5) {(c)};
+\end{tikzpicture}
+\end{center}
+
+
+\subsection{Expected sample covariance}
+The expectation of $\accentset{\circ}{B}_{ij}$ is:
+\begin{align}
+\mathbb{E} \left[\accentset{\circ}{B}_{ij}\right] & = \frac{1}{2N} \sum_{1 \le p \le N} \left(\mathbb{E} \left[\widetilde{\varepsilon}^b_{i,p} \widetilde{\varepsilon}^b_{j,p}\right] + \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,f(p)} \widetilde{\varepsilon}^b_{j,f(p)}\right] - \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,p} \widetilde{\varepsilon}^b_{j,f(p)}\right] - \mathbb{E} \left[\widetilde{\varepsilon}^b_{i,f(p)} \widetilde{\varepsilon}^b_{j,p}\right]\right)
+\end{align}
+Using properties \eqref{eq:exp_pert_prod_1} and \eqref{eq:exp_pert_prod_2}, the expectation of $\accentset{\circ}{B}_{ij}$ is:
+\begin{align}
+\mathbb{E} \left[\accentset{\circ}{B}_{ij}\right] = B_{ij}
+\end{align}
+So the circular estimator \eqref{eq:cov_estim_3} is also unbiased.
+
+\subsection{Expected product of sample covariances}
+The expected product of two sample covariances $\accentset{\circ}{B}_{ij}$ and $\accentset{\circ}{B}_{kl}$ is given by:
+\begin{align}
+\mathbb{E} \left[\accentset{\circ}{B}_{ij} \accentset{\circ}{B}_{kl}\right] & = \mathbb{E}\left[\left(\frac{1}{2N} \sum_{1 \le p \le N} \left(\widetilde{\varepsilon}^b_{i,p} - \widetilde{\varepsilon}^b_{i,f(p)}\right) \left(\widetilde{\varepsilon}^b_{j,p} - \widetilde{\varepsilon}^b_{j,f(p)}\right)\right) \right. \nonumber \\
+& \left. \quad \times \left(\frac{1}{4N} \sum_{1 \le q \le N} \left(\widetilde{\varepsilon}^b_{k,q} - \widetilde{\varepsilon}^b_{k,f(q)}\right) \left(\widetilde{\varepsilon}^b_{l,q} - \widetilde{\varepsilon}^b_{l,f(q)}\right)\right) \right] \nonumber \\
+& = \frac{1}{4N^2} \sum_{\substack{1 \le p \le N\\1 \le q \le N}} \mathbb{E}\left[\left(\widetilde{\varepsilon}^b_{i,p} - \widetilde{\varepsilon}^b_{i,f(p)}\right) \left(\widetilde{\varepsilon}^b_{j,p} - \widetilde{\varepsilon}^b_{j,f(p)}\right) \right. \nonumber \\
+& \left. \quad \times \left(\widetilde{\varepsilon}^b_{k,q} - \widetilde{\varepsilon}^b_{k,f(q)}\right) \left(\widetilde{\varepsilon}^b_{l,q} - \widetilde{\varepsilon}^b_{l,f(q)}\right) \right]
+\end{align}
+The cardinality of the intersection $\{p,f(p)\} \cap \{q,f(q)\}$ can only take values of 0, 1 and 2.
+\begin{enumerate}
+\item First case: $|\{p,f(p)\} \cap \{q,f(q)\}| = 0$. Once $p$ is set ($N$ possible draws), $f(p)$ is also set and there are $N-3$ remaining possible values for $q$ such that neither $q$ nor $f(q)$ are equal to $p$ or $f(p)$. Globally, there are $\displaystyle N(N-3)$ such terms in the sum, each one similar to $4 B_{ij} B_{kl}$.
+\item Second case: $|\{p,f(p)\} \cap \{q,f(q)\}| = 1$. Once $p$ is set ($N$ possible draws), $f(p)$ is also set and there are 2 remaining possible values for $q$ such that either $q$ or $f(q)$ is equal to $p$ or $f(p)$.  Globally, there are $\displaystyle 2N$ such terms in the sum, each one similar to $\Xi_{ijkl} + 3 B_{ij} B_{kl}$.
+\item Third case: $|\{p,f(p)\} \cap \{q,f(q)\}| = 2$.  Once $p$ is set ($N$ possible draws), $f(p)$ is also set and there is only one possible value for $q$ such that $q = p$ and $f(q) = f(p)$.  Globally, there are $\displaystyle N$ such terms in the sum, each one similar to $2 \left(\Xi_{ijkl} + B_{ij} B_{kl} + B_{ik} B_{jl} + B_{il} B_{jk}\right)$.
+\end{enumerate}
+Gathering all the terms:
+\begin{align}
+\label{eq:exp_prod_3}
+\mathbb{E} \left[\accentset{\circ}{B}_{ij} \accentset{\circ}{B}_{kl}\right] & = Q_1(N) \ \Xi_{ijkl} + Q_2(N) \ B_{ij} B_{kl} + Q_3(N) \left(B_{ik} B_{jl} + B_{il} B_{jk}\right)
+\end{align}
+with:
+\begin{subequations}
+\begin{align}
+Q_1(N) & = \frac{2N+2N}{4N^2} = \frac{1}{N} = P_1(N)\\
+Q_2(N) & = \frac{4N(N-3)+6N+2N}{4N^2} = \frac{N-1}{N} = P_2(N)\\
+Q_3(N) & = \frac{2N}{4N^2} = \frac{1}{2N} \ne P_3(N)
+\end{align}
+\end{subequations}
+$  $\\
+In the case of a Gaussian distributed ensemble, the fourth-order centered moment can be expressed from the covariances with equation \eqref{eq:wick_isserlis}, so the expected product of sample covariances \eqref{eq:exp_prod_3} is transformed into:
+\begin{align}
+\label{eq:exp_prod_gau_3}
+\mathbb{E} \left[\accentset{\circ}{B}_{ij} \accentset{\circ}{B}_{kl}\right] = B_{ij} B_{kl} + Q_4(N) \left(B_{ik} B_{jl} + B_{il} B_{jk}\right)
+\end{align}
+with:
+\begin{align}
+Q_4(N) = Q_1(N) + Q_3(N) = \frac{3}{2N}
+\end{align}
+
+\subsection{Sampling noise comparison}
+The variance of the standard estimator $\widetilde{B}_{ij}$ is given by:
+\begin{align}
+\var\left(\widetilde{B}_{ij}\right) & = \mathbb{E} \left[\widetilde{B}_{ij}^2\right]-\mathbb{E} \left[\widetilde{B}_{ij}\right]^2 \nonumber \\
+& = P_1(N) \ \xi_{ij} + P_7(N) \ B_{ij}^2 + P_3(N) \ B_{ii} B_{jj} - B_{ij}^2
+\end{align}
+with $\xi_{ij} = \Xi_{ijij}$ and
+\begin{align}
+P_7(N) = \frac{N^2-2N+2}{N(N-1)}
+\end{align}
+whereas the variance of the circular estimator $\accentset{\circ}{B}_{ij}$ is given by:
+\begin{align}
+\var\left(\accentset{\circ}{B}_{ij}\right) & = \mathbb{E} \left[\accentset{\circ}{B}_{ij}^2\right]-\mathbb{E} \left[\accentset{\circ}{B}_{ij}\right]^2 \nonumber \\
+& = Q_1(N) \ \xi_{ij} + Q_5(N) \ B_{ij}^2 + Q_3(N) \ B_{ii} B_{jj} - B_{ij}^2
+\end{align}
+with
+\begin{align}
+Q_5(N) = Q_2(N) + Q_3(N) = \frac{2N-1}{2N}
+\end{align}
+So the ratio of these variances is given by:
+\begin{align}
+r\left(N, \mathbf{B}, \boldsymbol{\Xi}\right) & = \frac{\var\left(\accentset{\circ}{B}_{ij}\right)}{\var\left(\widetilde{B}_{ij}\right)} \nonumber \\
+& = 1+\frac{Q_6(N) \ \left(B_{ij}^2 + B_{ii} B_{jj}\right)}{\var\left(\widetilde{B}_{ij}\right)}
+\end{align}
+with
+\begin{align}
+Q_6(N) = Q_5(N)-P_7(N) = Q_3(N) - P_3(N) = \frac{N-3}{2N(N-1)}
+\end{align}
+For $N > 3$, the ratio $r\left(N, \mathbf{B}, \boldsymbol{\xi}\right) > 1$ so the standard estimator $\widetilde{B}_{ij}$ is always more accurate than the circular estimator $\accentset{\circ}{B}_{ij}$.\\
+$  $\\
+In the Gaussian case, the variance of $\widetilde{B}_{ij}$ can be simplified into:
+\begin{align}
+\var\left(\widetilde{B}_{ij}\right) & = P_4(N) \ \left(B_{ij}^2+B_{ii} B_{jj}\right)
+\end{align}
+So the ratio $r\left(N, \mathbf{B}, \boldsymbol{\xi}\right)$ becomes:
+\begin{align}
+r(N) = 1+\frac{Q_6(N)}{P_4(N)} = 1+\frac{N-3}{2N}
+\end{align}
+The ratio $r(N)$ depends on the ensemble size $N$ only, not on the values of $\mathbf{B}$ and $\boldsymbol{\xi}$. For $N \gg 1$, $r(N)$ converges to $3/2$, which means that the increase of the sampling noise from $\widetilde{B}_{ij}$ to $\accentset{\circ}{B}_{ij}$, measured as the ratio of their standard-deviations, is given by $\sqrt{3/2}-1 \simeq 22.5\%$.\\
+$ $\\
+It is also possible to compare estimators by computing the number of members required to reach the same accuracy in both cases. The circular estimator with $N$ members has the same accuracy as the standard estimator with $N'$ members if:
+\begin{align}
+& Q_4(N) = P_4(N') \nonumber \\
+\Leftrightarrow \ & \frac{3}{2N} = \frac{1}{N'-1} \nonumber \\
+\Leftrightarrow \ & N' = \frac{2N}{3}+1
+\end{align}
+For $N \gg 1$, the same accuracy can be obtained with 33\% less members if the standard estimator is used instead of the circular estimator.
+
+\subsection{Ensemble members sequence}
+Another drawback of the circular estimator comes from the variability of results depending on the ensemble members sequence. For example, let's assume that $n = 1$ and $N = 4$, with the following values:
+\begin{align}
+\widetilde{x}^b_1 = \widetilde{x}^b_2 = 0 \ \text{ and } \ \widetilde{x}^b_3 = \widetilde{x}^b_4 = 2
+\end{align}
+The sample mean is:
+\begin{equation}
+\left\langle \widetilde{x}^b \right\rangle = \frac{1}{4} \left(0+0+2+2\right) = 1
+\end{equation}
+and the perturbations are:
+\begin{equation}
+\delta \widetilde{x}^b_1 = \delta \widetilde{x}^b_2 = -1 \ \text{ and } \ \delta \widetilde{x}^b_3 = \delta \widetilde{x}^b_4 = 1 \\
+\end{equation}
+From the standard estimator:
+\begin{align}
+\widetilde{B} & = \frac{1}{N-1} \sum_{1 \le p \le 4} \left(\delta \widetilde{x}^b_i\right)^2 \nonumber \\
+& = \frac{1}{4-1} \left((-1)^2+(-1)^2+1^2+1^2\right) = \frac{4}{3}
+\end{align}
+With the circular estimator:
+\begin{align}
+\label{eq:wrong_cov_1}
+\accentset{\circ}{B} = \frac{1}{2 \times 4} \left((-2)^2+0^2+2^2+0^2\right) = 1
+\end{align}
+However, if we change the members sequence:
+\begin{align}
+\widetilde{x}^b_1 = \widetilde{x}^b_3 = 0 \ \text{ and } \ \widetilde{x}^b_2 = \widetilde{x}^b_4 = 2
+\end{align}
+Then the sample mean is the same, but the circular estimator yields:
+\begin{align}
+\label{eq:wrong_cov_2}
+\accentset{\circ}{B} = \frac{1}{2 \times 4} \left((-2)^2+2^2+(-2)^2+2^2\right) = 2
+\end{align}
+With the circular estimator, the sample covariance depends on the ensemble members sequence.\\
+$  $\\
+Illustration with an ensemble of 6 members: circular estimator for a members sequence (a) and for another members sequence (b).
+\begin{center}
+\begin{tikzpicture}[x=2.2cm,y=1.0cm]
+\draw[->] (0,0)--(2,0);
+\draw[->] (0,0)--(0,3.5);
+\node[] (M1) at (0.5,1.8) {\textbullet};
+\node[] (M2) at (0.5,0.5) {\textbullet};
+\node[] (M3) at (0.7,3) {\textbullet};
+\node[] (M4) at (1,1) {\textbullet};
+\node[] (M5) at (1,2.5) {\textbullet};
+\node[] (M6) at (1.5,3) {\textbullet};
+\begin{scope}[on background layer]
+\path [draw, thick, color=black!40] (M1.center) -- (M2.center) node[] {};
+\path [draw, thick, color=black!40] (M2.center) -- (M4.center) node[] {};
+\path [draw, thick, color=black!40] (M4.center) -- (M6.center) node[] {};
+\path [draw, thick, color=black!40] (M6.center) -- (M5.center) node[] {};
+\path [draw, thick, color=black!40] (M5.center) -- (M3.center) node[] {};
+\path [draw, thick, color=black!40] (M3.center) -- (M1.center) node[] {};
+\end{scope}
+\node[] (letter) at (1.8,0.5) {(a)};
+\end{tikzpicture}
+$\qquad \qquad$
+\begin{tikzpicture}[x=2.2cm,y=1.0cm]
+\draw[->] (0,0)--(2,0);
+\draw[->] (0,0)--(0,3.5);
+\node[] (M1) at (0.5,1.8) {\textbullet};
+\node[] (M2) at (0.5,0.5) {\textbullet};
+\node[] (M3) at (0.7,3) {\textbullet};
+\node[] (M4) at (1,1) {\textbullet};
+\node[] (M5) at (1,2.5) {\textbullet};
+\node[] (M6) at (1.5,3) {\textbullet};
+\begin{scope}[on background layer]
+\path [draw, thick, color=black!40] (M1.center) -- (M6.center) node[] {};
+\path [draw, thick, color=black!40] (M6.center) -- (M2.center) node[] {};
+\path [draw, thick, color=black!40] (M2.center) -- (M3.center) node[] {};
+\path [draw, thick, color=black!40] (M3.center) -- (M4.center) node[] {};
+\path [draw, thick, color=black!40] (M4.center) -- (M5.center) node[] {};
+\path [draw, thick, color=black!40] (M5.center) -- (M1.center) node[] {};
+\end{scope}
+\node[] (letter) at (1.8,0.5) {(b)};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Numerical validation}
+A simple validation of these theoretical results can be performed:
+\begin{itemize}
+\item A ensemble of $N$ members of size $n=2$ is generated from a multivariate Gaussian distribution with a know covariance matrix:
+\begin{align}
+\mathbf{B} = \left( \begin{array}{cc}
+v & c \\
+c & v
+\end{array} \right)
+\end{align}
+\item The sample covariance of this ensemble is estimated:
+\begin{itemize}
+\item either using the standard estimator,
+\item or using the circular estimator, with different random shuffles of the same ensemble.
+\end{itemize}
+\end{itemize}
+This operation is repeated for a large number of independent ensembles, and the standard-deviation of each covariance estimator is computed and compared to its theoretical value. The ratio $r\left(N, \mathbf{B}, \boldsymbol{\xi}\right)$ is also computed and compared to its theoretical value. This is done in figure \ref{fig:theory_1.0} for the variance $v = 1$ and in figure \ref{fig:theory_0.2} for the covariance $c = 0.2$.\\
+$  $\\
+The fit between theoretical and experimental values is very good. As shown with the green lines, the accuracy of the circular estimator with 300 members could be reached with 200 members only using the standard estimator.
+
+\begin{figure}[h!]
+  \noindent\includegraphics[width=\textwidth]{theory_1.0.jpg}
+  \caption{Left: sample variance error standard deviation, black: standard estimator, red: circular estimator, gray dashed: respective theoretical values. Right: ratio of standard-deviation, blue: empirical, gray dashed: theoretical value.} \label{fig:theory_1.0}
+\end{figure}
+
+\begin{figure}[h!]
+  \noindent\includegraphics[width=\textwidth]{theory_0.2.jpg}
+  \caption{Same as figure \ref{fig:theory_1.0} for the covariance.} \label{fig:theory_0.2}
+\end{figure}
 
 \clearpage
 
@@ -776,24 +1073,24 @@ The matrix $\mathbf{A}_N$ can be inverted:
 \begin{align}
 \label{eq:invert_lin_sys}
 \mathbf{A}_N^{-1} = \left( \begin{array}{cccc}
-P_7(N) & P_8(N) & P_8(N) & P_9(N) \\
-P_8(N) & P_7(N) & P_8(N) & P_9(N) \\
-P_8(N) & P_8(N) & P_7(N) & P_9(N) \\
-P_{10}(N) & P_{10}(N) & P_{10}(N) & P_{11}(N)
+P_8(N) & P_9(N) & P_9(N) & P_{10}(N) \\
+P_9(N) & P_8(N) & P_9(N) & P_{10}(N) \\
+P_9(N) & P_9(N) & P_8(N) & P_{10}(N) \\
+P_{11}(N) & P_{11}(N) & P_{11}(N) & P_{12}(N)
 \end{array} \right)
 \end{align}
 with:
 \begin{subequations}
 \begin{align}
-P_7(N) & = \frac{2 P_1(N) P_6(N) - P_5(N)\left(P_2(N)+P_3(N)\right)}{\left(P_2(N)-P_3(N)\right)\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2P_3(N)\right)\right)} \nonumber \\
+P_8(N) & = \frac{2 P_1(N) P_6(N) - P_5(N)\left(P_2(N)+P_3(N)\right)}{\left(P_2(N)-P_3(N)\right)\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2P_3(N)\right)\right)} \nonumber \\
 & = \frac{(N-1)(N^2-3N+1)}{N(N-2)(N-3)} \\
-P_8(N) & = \frac{P_3(N) P_5(N) - P_1(N) P_6(N)}{\left(P_2(N)-P_3(N)\right)\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2 P_3(N)\right)\right)} \nonumber \\
+P_9(N) & = \frac{P_3(N) P_5(N) - P_1(N) P_6(N)}{\left(P_2(N)-P_3(N)\right)\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2 P_3(N)\right)\right)} \nonumber \\
 & = \frac{N-1}{N(N-2)(N-3)} \\
-P_9(N) & = \frac{P_1(N)}{\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2P_3(N)\right)\right)} \nonumber \\
+P_{10}(N) & = \frac{P_1(N)}{\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2P_3(N)\right)\right)} \nonumber \\
 & = -\frac{N}{(N-2)(N-3)} \\
-P_{10}(N) & = \frac{P_6(N)}{\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2P_3(N)\right)\right)} \nonumber \\
+P_{11}(N) & = \frac{P_6(N)}{\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2P_3(N)\right)\right)} \nonumber \\
 & = -\frac{(N-1)(2N-3)}{N(N-2)(N-3)} \\
-P_{11}(N) & = -\frac{P_2(N)+2 P_3(N)}{\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2P_3(N)\right)\right)} \nonumber \\
+P_{12}(N) & = -\frac{P_2(N)+2 P_3(N)}{\left(3 P_1(N) P_6(N) - P_5(N) \left(P_2(N) + 2P_3(N)\right)\right)} \nonumber \\
 & = \frac{N(N^2-2N+3)}{(N-1)(N-2)(N-3)}
 \end{align}
 \end{subequations}
@@ -801,10 +1098,10 @@ to get $\mathbf{x} = \mathbf{A}_N^{-1} \widetilde{\mathbf{x}}$, which is equival
 \begin{subequations}
 \begin{align}
 \label{eq:prod_asy_cov}
-\mathbb{E} \left[B_{ij} B_{kl}\right] & = P_7(N) \ \mathbb{E} \left[\widetilde{B}_{ij} \widetilde{B}_{kl}\right] + P_8(N) \left(\mathbb{E} \left[\widetilde{B}_{ik} \widetilde{B}_{jl}\right] + \mathbb{E} \left[\widetilde{B}_{il} \widetilde{B}_{jk}\right]\right) \nonumber \\
-& \quad + P_9(N) \ \mathbb{E} \left[\widetilde{\Xi}_{ijkl}\right] \\
+\mathbb{E} \left[B_{ij} B_{kl}\right] & = P_8(N) \ \mathbb{E} \left[\widetilde{B}_{ij} \widetilde{B}_{kl}\right] + P_9(N) \left(\mathbb{E} \left[\widetilde{B}_{ik} \widetilde{B}_{jl}\right] + \mathbb{E} \left[\widetilde{B}_{il} \widetilde{B}_{jk}\right]\right) \nonumber \\
+& \quad + P_{10}(N) \ \mathbb{E} \left[\widetilde{\Xi}_{ijkl}\right] \\
 \label{eq:asy_mom_4}
-\mathbb{E} \left[\Xi_{ijkl}\right] & = P_{10}(N) \ \left(\mathbb{E} \left[\widetilde{B}_{ij} \widetilde{B}_{kl}\right] + \mathbb{E} \left[\widetilde{B}_{ik} \widetilde{B}_{jl}\right] + \mathbb{E} \left[\widetilde{B}_{il} \widetilde{B}_{jk}\right]\right) + P_{11}(N) \ \mathbb{E} \left[\widetilde{\Xi}_{ijkl}\right]
+\mathbb{E} \left[\Xi_{ijkl}\right] & = P_{11}(N) \ \left(\mathbb{E} \left[\widetilde{B}_{ij} \widetilde{B}_{kl}\right] + \mathbb{E} \left[\widetilde{B}_{ik} \widetilde{B}_{jl}\right] + \mathbb{E} \left[\widetilde{B}_{il} \widetilde{B}_{jk}\right]\right) + P_{12}(N) \ \mathbb{E} \left[\widetilde{\Xi}_{ijkl}\right]
 \end{align}
 \end{subequations}
 $  $\\
@@ -830,22 +1127,22 @@ The matrix $\mathbf{A}_N$ can be inverted:
 \begin{align}
 \label{eq:invert_lin_sys_gau}
 \mathbf{A}_N^{-1} = \left( \begin{array}{ccc}
-P_{12}(N) & P_{13}(N) & P_{13}(N) \\
-P_{13}(N) & P_{12}(N) & P_{13}(N) \\
-P_{13}(N) & P_{13}(N) & P_{12}(N)
+P_{13}(N) & P_{14}(N) & P_{14}(N) \\
+P_{14}(N) & P_{13}(N) & P_{14}(N) \\
+P_{14}(N) & P_{14}(N) & P_{13}(N)
 \end{array} \right)
 \end{align}
 with:
 \begin{subequations}
 \begin{align}
-P_{12}(N) & = \frac{1 + P_4(N)}{\left(1 - P_4(N)\right)\left(1 + 2P_4(N)\right)} = \frac{N(N-1)}{(N-2)(N+1)} \\
-P_{13}(N) & = \frac{-P_4(N)}{\left(1 - P_4(N)\right)\left(1 + 2P_4(N)\right)} = -\frac{N-1}{(N-2)(N+1)}
+P_{13}(N) & = \frac{1 + P_4(N)}{\left(1 - P_4(N)\right)\left(1 + 2P_4(N)\right)} = \frac{N(N-1)}{(N-2)(N+1)} \\
+P_{14}(N) & = \frac{-P_4(N)}{\left(1 - P_4(N)\right)\left(1 + 2P_4(N)\right)} = -\frac{N-1}{(N-2)(N+1)}
 \end{align}
 \end{subequations}
 to get $\mathbf{x} = \mathbf{A}_N^{-1} \widetilde{\mathbf{x}}$, which is equivalent to:
 \begin{align}
 \label{eq:prod_asy_cov_gau}
-\mathbb{E} \left[B_{ij} B_{kl}\right] = P_{12}(N) \ \mathbb{E} \left[\widetilde{B}_{ij} \widetilde{B}_{kl}\right] + P_{13}(N) \left(\mathbb{E} \left[\widetilde{B}_{ik} \widetilde{B}_{jl}\right] + \mathbb{E} \left[\widetilde{B}_{il} \widetilde{B}_{jk}\right]\right)
+\mathbb{E} \left[B_{ij} B_{kl}\right] = P_{13}(N) \ \mathbb{E} \left[\widetilde{B}_{ij} \widetilde{B}_{kl}\right] + P_{14}(N) \left(\mathbb{E} \left[\widetilde{B}_{ik} \widetilde{B}_{jl}\right] + \mathbb{E} \left[\widetilde{B}_{il} \widetilde{B}_{jk}\right]\right)
 \end{align}
 
 \subsection{Particular case}
@@ -855,7 +1152,7 @@ Denoting $\widetilde{\boldsymbol{\xi}} \in \mathbb{R}^{n \times n}$ the matrix s
 \begin{subequations}
 \begin{align}
 \label{eq:exp_prod_exp_2}
-\mathbb{E} \left[\widetilde{B}_{ij}^2\right] & = P_1(N) \mathbb{E} \left[\xi_{ij}\right] + P_{14}(N) \mathbb{E} \left[B^2_{ij}\right] + P_3(N) \mathbb{E} \left[B_{ii} B_{jj}\right] \\
+\mathbb{E} \left[\widetilde{B}_{ij}^2\right] & = P_1(N) \mathbb{E} \left[\xi_{ij}\right] + P_7(N) \mathbb{E} \left[B^2_{ij}\right] + P_3(N) \mathbb{E} \left[B_{ii} B_{jj}\right] \\
 \label{eq:exp_prod_exp_3}
 \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right] & = P_1(N) \mathbb{E} \left[\xi_{ij}\right] + 2 P_3(N) \mathbb{E} \left[B^2_{ij}\right] + P_2(N) \mathbb{E} \left[B_{ii} B_{jj}\right] \\
 \label{eq:exp_mom_4_exp_2}
@@ -864,22 +1161,22 @@ Denoting $\widetilde{\boldsymbol{\xi}} \in \mathbb{R}^{n \times n}$ the matrix s
 \end{subequations}
 with:
 \begin{align}
-P_{14}(N) = P_2(N) + P_3(N) =  \frac{N^2-2N+2}{N(N-1)}
+P_7(N) = P_2(N) + P_3(N) =  \frac{N^2-2N+2}{N(N-1)}
 \end{align}
 Reciprocally, equations \eqref{eq:prod_asy_cov} and \eqref{eq:asy_mom_4} becomes:
 \begin{subequations}
 \begin{align}
 \label{eq:prod_asy_cov_exp_2}
-\mathbb{E} \left[B^2_{ij}\right] & = P_{15}(N) \mathbb{E} \left[\widetilde{B}^2_{ij}\right] + P_8(N) \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right] + P_9(N) \mathbb{E} \left[\widetilde{\xi}_{ij}\right] \\
+\mathbb{E} \left[B^2_{ij}\right] & = P_{15}(N) \mathbb{E} \left[\widetilde{B}^2_{ij}\right] + P_9(N) \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right] + P_{10}(N) \mathbb{E} \left[\widetilde{\xi}_{ij}\right] \\
 \label{eq:prod_asy_cov_exp_3}
-\mathbb{E} \left[B_{ii} B_{jj}\right] & = 2P_8(N) \mathbb{E} \left[\widetilde{B}^2_{ij}\right] + P_7(N) \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right] + P_9(N) \mathbb{E} \left[\widetilde{\xi}_{ij}\right] \\
+\mathbb{E} \left[B_{ii} B_{jj}\right] & = 2P_9(N) \mathbb{E} \left[\widetilde{B}^2_{ij}\right] + P_8(N) \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right] + P_{10}(N) \mathbb{E} \left[\widetilde{\xi}_{ij}\right] \\
 \label{eq:asy_mom_4_exp_2}
-\mathbb{E} \left[\xi_{ij}\right] & = P_{10}(N) \left(2 \mathbb{E} \left[\widetilde{B}_{ij}^2\right] + \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right] \right) + P_{11}(N) \ \mathbb{E} \left[\widetilde{\xi}_{ij}\right]
+\mathbb{E} \left[\xi_{ij}\right] & = P_{11}(N) \left(2 \mathbb{E} \left[\widetilde{B}_{ij}^2\right] + \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right] \right) + P_{12}(N) \ \mathbb{E} \left[\widetilde{\xi}_{ij}\right]
 \end{align}
 \end{subequations}
 with:
 \begin{align}
-P_{15}(N) = P_7(N) + P_8(N) =  \frac{(N-1)^2}{N(N-3)}
+P_{15}(N) = P_8(N) + P_9(N) =  \frac{(N-1)^2}{N(N-3)}
 \end{align}
 $  $\\
 In the case of a Gaussian distributed ensemble, equation \eqref{eq:exp_prod_gau_exp} is used instead:
@@ -899,14 +1196,14 @@ Reciprocally, equation \eqref{eq:prod_asy_cov_gau} becomes:
 \begin{subequations}
 \begin{align}
 \label{eq:prod_asy_cov_gau_exp_2}
-\mathbb{E} \left[B^2_{ij}\right] & = P_{17}(N) \mathbb{E} \left[ \widetilde{B}_{ij}^2 \right] + P_{13}(N) \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj} \right] \\
+\mathbb{E} \left[B^2_{ij}\right] & = P_{17}(N) \mathbb{E} \left[ \widetilde{B}_{ij}^2 \right] + P_{14}(N) \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj} \right] \\
 \label{eq:prod_asy_cov_gau_exp_3}
-\mathbb{E} \left[B_{ii} B_{jj}\right] & = 2 P_{13}(N) \mathbb{E} \left[\widetilde{B}_{ij}^2\right] + P_{12}(N) \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right]
+\mathbb{E} \left[B_{ii} B_{jj}\right] & = 2 P_{14}(N) \mathbb{E} \left[\widetilde{B}_{ij}^2\right] + P_{13}(N) \mathbb{E} \left[\widetilde{B}_{ii} \widetilde{B}_{jj}\right]
 \end{align}
 \end{subequations}
 with:
 \begin{align}
-P_{17}(N) = P_{12}(N) + P_{13}(N) = \frac{(N-1)^2}{(N-2)(N+1)}
+P_{17}(N) = P_{13}(N) + P_{14}(N) = \frac{(N-1)^2}{(N-2)(N+1)}
 \end{align}
 
 \subsection{Diagnostics for any ensemble size}
@@ -1265,12 +1562,12 @@ if we assume (reasonably) that $\mathbb{E} \left[B_{ii} B_{jj} \right] \ne 0$.
 \end{align}
 Plugging this result into equation \eqref{eq:prod_asy_cov_gau_exp_2}, we get:
 \begin{align}
-\mathbb{E} \left[B^2_{ij}\right] \approx P_{17}(N) \ \mathbb{E} \left[\widetilde{B}_{ij}^2\right] + P_{13}(N) \frac{\mathbb{E} \left[\widetilde{B}_{ij}^2\right]}{\mathbb{E} \left[\widetilde{C}_{ij}^2 \right]}
+\mathbb{E} \left[B^2_{ij}\right] \approx P_{17}(N) \ \mathbb{E} \left[\widetilde{B}_{ij}^2\right] + P_{14}(N) \frac{\mathbb{E} \left[\widetilde{B}_{ij}^2\right]}{\mathbb{E} \left[\widetilde{C}_{ij}^2 \right]}
 \end{align}
 Thus, the optimal localization $\mathbf{L}^\mathrm{opt}$ of equation \eqref{eq:loc_th} can be approximated by:
 \begin{align}
 \label{eq:local_gau_cor_2}
-L^\mathrm{app2}_{ij} = P_{17}(N) + P_{13}(N) \frac{1}{\mathbb{E} \left[\widetilde{C}_{ij}^2\right]}
+L^\mathrm{app2}_{ij} = P_{17}(N) + P_{14}(N) \frac{1}{\mathbb{E} \left[\widetilde{C}_{ij}^2\right]}
 \end{align}
 \end{enumerate}
 For a Gaussian distributed ensemble, \citet{rady_2005} proves that:
@@ -1340,15 +1637,15 @@ Since $P_{18}(N)$ is positive, the components of $\mathbf{H}^{L^\mathrm{app1}}$ 
 \subsection{Using the squared sample correlation tensor}
 The sample correlation $\widetilde{\mathbf{C}}$ and the localization $\mathbf{L}^\mathrm{app2}$ are transposed in continuous space and respectively denoted $\widetilde{C}(\mathbf{r})$ and $L^\mathrm{app2}(\mathbf{r})$. Equation \eqref{eq:local_gau_cor_2} becomes:
 \begin{align}
-L^\mathrm{app2} = P_{17}(N) + P_{13}(N) \frac{1}{\mathbb{E} \left[\widetilde{C}^2\right]}
+L^\mathrm{app2} = P_{17}(N) + P_{14}(N) \frac{1}{\mathbb{E} \left[\widetilde{C}^2\right]}
 \end{align}
 The gradient of $L^\mathrm{app2}$ is:
 \begin{align}
-\frac{\partial L^\mathrm{app2}}{\partial x_\alpha} & = - P_{13}(N) \ \frac{\displaystyle \frac{\partial \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha}}{\mathbb{E} \left[\widetilde{C}^2\right]^2}
+\frac{\partial L^\mathrm{app2}}{\partial x_\alpha} & = - P_{14}(N) \ \frac{\displaystyle \frac{\partial \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha}}{\mathbb{E} \left[\widetilde{C}^2\right]^2}
 \end{align}
 and its Hessian matrix is:
 \begin{align}
-\frac{\partial^2 L^\mathrm{app2}}{\partial x_\alpha \partial x_\beta} & = - P_{13}(N) \ \frac{\displaystyle \frac{\partial^2 \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha \partial x_\beta} \mathbb{E} \left[\widetilde{C}^2\right] - 2 \frac{\partial \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha} \frac{\partial \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\beta}}{\mathbb{E} \left[\widetilde{C}^2\right]^3}
+\frac{\partial^2 L^\mathrm{app2}}{\partial x_\alpha \partial x_\beta} & = - P_{14}(N) \ \frac{\displaystyle \frac{\partial^2 \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha \partial x_\beta} \mathbb{E} \left[\widetilde{C}^2\right] - 2 \frac{\partial \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha} \frac{\partial \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\beta}}{\mathbb{E} \left[\widetilde{C}^2\right]^3}
 \end{align}
 However in $\mathbf{r} = \mathbf{0}$:
 \begin{subequations}
@@ -1359,17 +1656,17 @@ However in $\mathbf{r} = \mathbf{0}$:
 \end{subequations}
 so that:
 \begin{align}
-\left.\frac{\partial^2 L^\mathrm{app2}}{\partial x_\alpha \partial x_\beta}\right|_{\mathbf{r}=\mathbf{0}} & = - P_{13}(N) \left.\frac{\partial^2 \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha \partial x_\beta} \right|_{\mathbf{r}=\mathbf{0}}
+\left.\frac{\partial^2 L^\mathrm{app2}}{\partial x_\alpha \partial x_\beta}\right|_{\mathbf{r}=\mathbf{0}} & = - P_{14}(N) \left.\frac{\partial^2 \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha \partial x_\beta} \right|_{\mathbf{r}=\mathbf{0}}
 \end{align}
 Thus, the local localization tensor associated with $L^\mathrm{app2}$ is given by:
 \begin{align}
 H^{L^\mathrm{app2}}_{\alpha,\beta} & = \frac{\displaystyle - \left.\frac{\partial^2 L^\mathrm{app2}}{\partial x_\alpha \partial x_\beta}\right|_{\mathbf{r}=\mathbf{0}}}{L^\mathrm{app2}(\mathbf{0})} \nonumber \\
-& = \frac{P_{13}(N)}{P_{17}(N) + P_{13}(N)} \left.\frac{\partial^2 \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha \partial x_\beta} \right|_{\mathbf{r}=\mathbf{0}} \nonumber \\
+& = \frac{P_{14}(N)}{P_{17}(N) + P_{14}(N)} \left.\frac{\partial^2 \mathbb{E} \left[\widetilde{C}^2\right]}{\displaystyle \partial x_\alpha \partial x_\beta} \right|_{\mathbf{r}=\mathbf{0}} \nonumber \\
 & = P_{19}(N) \ H^{\mathbb{E} \left[\widetilde{C}^2\right]}_{\alpha,\beta}
 \end{align}
 with:
 \begin{align}
-P_{19}(N) = -\frac{P_{13}(N)}{P_{17}(N) + P_{13}(N)} = \frac{1}{N-2}
+P_{19}(N) = -\frac{P_{14}(N)}{P_{17}(N) + P_{14}(N)} = \frac{1}{N-2}
 \end{align}
 
 \subsection{Using the sample correlation tensor}
@@ -1927,11 +2224,11 @@ $  $\\
 The expected product of asymptotic sample variances can be derived from equation \eqref{eq:prod_asy_cov_exp_3}:
 \begin{align}
 \label{eq:prod_asy_var_exp_mu}
-\left\lceil \mathbf{v} \circ \mathbf{v} \right\rfloor = P_{20}(N) \left\lceil\widetilde{\mathbf{v}} \circ \widetilde{\mathbf{v}}\right\rfloor + P_9(N) \left\lceil\widetilde{\boldsymbol{\varsigma}}\right\rfloor
+\left\lceil \mathbf{v} \circ \mathbf{v} \right\rfloor = P_{20}(N) \left\lceil\widetilde{\mathbf{v}} \circ \widetilde{\mathbf{v}}\right\rfloor + P_{10}(N) \left\lceil\widetilde{\boldsymbol{\varsigma}}\right\rfloor
 \end{align}
 where $\widetilde{\boldsymbol{\varsigma}} \in \mathbb{R}^n$ is a vector whose components are given by $\widetilde{\varsigma}_i = \widetilde{\xi}_{ii} = \widetilde{\Xi}_{iiii}$, and with:
 \begin{align}
-P_{20}(N) = P_7(N) + 2 P_8(N) =  \frac{(N-1)(N^2-3N+3)}{N(N-2)(N-3)}
+P_{20}(N) = P_8(N) + 2 P_9(N) =  \frac{(N-1)(N^2-3N+3)}{N(N-2)(N-3)}
 \end{align}
 $  $\\
 In the case of a Gaussian distributed ensemble, equation \eqref{eq:prod_asy_cov_gau_exp_3} is used instead:
@@ -1941,7 +2238,7 @@ In the case of a Gaussian distributed ensemble, equation \eqref{eq:prod_asy_cov_
 \end{align}
 with:
 \begin{align}
-P_{21}(N) = P_{12}(N) + 2 P_{13}(N) = \frac{N-1}{N+1}
+P_{21}(N) = P_{13}(N) + 2 P_{14}(N) = \frac{N-1}{N+1}
 \end{align}
 
 \subsection{Solution unicity}
@@ -1997,13 +2294,13 @@ so that:
 \begin{align}
 \left\lceil\widetilde{\boldsymbol{\varsigma}}\right\rfloor \ge \frac{(N-1)^2}{N} \left\lceil\widetilde{\mathbf{v}} \circ \widetilde{\mathbf{v}}\right\rfloor
 \end{align}
-Since $P_9(N) < 0$, equation \eqref{eq:prod_asy_var_exp_mu} gives:
+Since $P_{10}(N) < 0$, equation \eqref{eq:prod_asy_var_exp_mu} gives:
 \begin{align}
 \left\lceil \mathbf{v} \circ \mathbf{v} \right\rfloor \le P_{22}(N) \left\lceil\widetilde{\mathbf{v}} \circ \widetilde{\mathbf{v}}\right\rfloor
 \end{align}
 with:
 \begin{align}
-P_{22}(N) = P_{20}(N) + P_9(N) \frac{(N-1)^2}{N} = -\frac{(N-1)(2N-3)}{N(N-2)(N-3)}
+P_{22}(N) = P_{20}(N) + P_{10}(N) \frac{(N-1)^2}{N} = -\frac{(N-1)(2N-3)}{N(N-2)(N-3)}
 \end{align}
 If there is no filtering ($\mathcal{L}^f=0$), then $\widehat{\mathbf{v}} = \widetilde{\mathbf{v}}$. Since $P_{22}(N) < 1$, we have in this case:
 \begin{align}
